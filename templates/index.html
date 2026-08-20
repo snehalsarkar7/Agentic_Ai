@@ -1,76 +1,940 @@
-index.html 
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
     <title>Gemini Tool Agent</title>
-    <link rel="stylesheet" href="/static/style.css">
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
 </head>
+
+
 <body>
 
-<div class="container">
+    <!-- Background Effects -->
 
-    <h1>🤖 Gemini Tool Agent</h1>
+    <div class="background">
 
-    <div id="chat-box"></div>
+        <div class="glow glow-1"></div>
 
-    <div class="input-area">
-        <input
-            type="text"
-            id="message"
-            placeholder="Ask anything..."
-        />
+        <div class="glow glow-2"></div>
 
-        <button onclick="sendMessage()">
-            Send
-        </button>
     </div>
 
-</div>
 
-<script>
+    <!-- Main Application -->
 
-async function sendMessage() {
+    <div class="app">
 
-    const input = document.getElementById("message");
-    const text = input.value;
 
-    if(!text) return;
+        <!-- ==================================================
+             SIDEBAR
+        =================================================== -->
 
-    const chatBox = document.getElementById("chat-box");
+        <aside class="sidebar">
 
-    chatBox.innerHTML += `
-        <div class="user">
-            👤 ${text}
-        </div>
-    `;
 
-    input.value = "";
+            <!-- Brand -->
 
-    const response = await fetch("/chat", {
+            <div class="brand">
 
-        method: "POST",
+                <div class="brand-icon">
+                    🤖
+                </div>
 
-        headers: {
-            "Content-Type": "application/json"
-        },
+                <div class="brand-text">
 
-        body: JSON.stringify({
-            message: text
-        })
-    });
+                    <h2>
+                        Tool Agent
+                    </h2>
 
-    const data = await response.json();
+                    <span>
+                        Gemini Powered
+                    </span>
 
-    chatBox.innerHTML += `
-        <div class="bot">
-            🤖 ${data.reply}
-        </div>
-    `;
+                </div>
 
-    chatBox.scrollTop = chatBox.scrollHeight;
-}
+            </div>
 
-</script>
+
+            <!-- Status -->
+
+            <div class="status-card">
+
+                <div class="status-dot"></div>
+
+                <div class="status-text">
+
+                    <strong>
+                        Agent Online
+                    </strong>
+
+                    <small>
+                        Ready to use tools
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <!-- Tools -->
+
+            <div class="tools-section">
+
+                <h3>
+                    AVAILABLE TOOLS
+                </h3>
+
+
+                <!-- Calculator -->
+
+                <div class="tool">
+
+                    <div class="tool-icon">
+                        ➕
+                    </div>
+
+                    <div class="tool-info">
+
+                        <strong>
+                            Calculator
+                        </strong>
+
+                        <small>
+                            Addition & calculations
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Product -->
+
+                <div class="tool">
+
+                    <div class="tool-icon">
+                        🛍️
+                    </div>
+
+                    <div class="tool-info">
+
+                        <strong>
+                            Product Info
+                        </strong>
+
+                        <small>
+                            Product details & prices
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Weather -->
+
+                <div class="tool">
+
+                    <div class="tool-icon">
+                        🌤️
+                    </div>
+
+                    <div class="tool-info">
+
+                        <strong>
+                            Weather
+                        </strong>
+
+                        <small>
+                            Live weather information
+                        </small>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Information -->
+
+            <div class="sidebar-info">
+
+                <p>
+                    💡 <strong>Tip</strong>
+                </p>
+
+                <span>
+                    Ask naturally. Gemini automatically
+                    chooses the right tool for your request.
+                </span>
+
+            </div>
+
+
+            <!-- Clear Conversation -->
+
+            <button
+                class="clear-btn"
+                onclick="clearChat()"
+            >
+
+                🗑️
+
+                <span>
+                    Clear Conversation
+                </span>
+
+            </button>
+
+
+        </aside>
+
+
+
+        <!-- ==================================================
+             CHAT AREA
+        =================================================== -->
+
+        <main class="chat-container">
+
+
+            <!-- Header -->
+
+            <header class="chat-header">
+
+                <div class="header-title">
+
+                    <h1>
+                        Gemini Tool Agent
+                    </h1>
+
+                    <p>
+                        Ask anything and let the agent
+                        choose the right tool.
+                    </p>
+
+                </div>
+
+
+                <div class="model-badge">
+
+                    <span class="online-dot"></span>
+
+                    Gemini 3.6 Flash
+
+                </div>
+
+            </header>
+
+
+
+            <!-- Chat Box -->
+
+            <div
+                id="chat-box"
+                class="chat-box"
+            >
+
+
+                <!-- Welcome Screen -->
+
+                <div class="welcome">
+
+                    <div class="welcome-icon">
+                        🤖
+                    </div>
+
+                    <h2>
+                        Hello! 👋
+                    </h2>
+
+                    <p>
+                        I'm your AI tool agent.
+                        Ask me something and I'll automatically
+                        decide which tool to use.
+                    </p>
+
+
+                    <!-- Quick Actions -->
+
+                    <div class="quick-actions">
+
+
+                        <button
+                            onclick="usePrompt('Add 125 and 375')"
+                        >
+
+                            <span class="quick-icon">
+                                ➕
+                            </span>
+
+                            <span>
+                                Calculate
+                            </span>
+
+                        </button>
+
+
+                        <button
+                            onclick="usePrompt('What is the price of iPhone 15?')"
+                        >
+
+                            <span class="quick-icon">
+                                🛍️
+                            </span>
+
+                            <span>
+                                Product
+                            </span>
+
+                        </button>
+
+
+                        <button
+                            onclick="usePrompt('What is the weather in Jaipur?')"
+                        >
+
+                            <span class="quick-icon">
+                                🌤️
+                            </span>
+
+                            <span>
+                                Weather
+                            </span>
+
+                        </button>
+
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- Typing Indicator -->
+
+            <div
+                id="typing"
+                class="typing hidden"
+            >
+
+                <div class="typing-avatar">
+                    🤖
+                </div>
+
+                <div class="typing-content">
+
+                    <span>
+                        Agent is thinking
+                    </span>
+
+                    <div class="dots">
+
+                        <i></i>
+
+                        <i></i>
+
+                        <i></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- Input Area -->
+
+            <div class="input-wrapper">
+
+                <div class="input-box">
+
+                    <textarea
+                        id="message"
+                        rows="1"
+                        placeholder="Ask the agent anything..."
+                        onkeydown="handleKey(event)"
+                    ></textarea>
+
+
+                    <button
+                        id="send-button"
+                        onclick="sendMessage()"
+                        title="Send message"
+                    >
+                        ➤
+                    </button>
+
+                </div>
+
+
+                <div class="input-hint">
+
+                    <span>
+                        Press
+                        <strong>Enter</strong>
+                        to send
+                    </span>
+
+                    <span>
+                        AI may use external tools
+                    </span>
+
+                </div>
+
+            </div>
+
+
+        </main>
+
+    </div>
+
+
+
+    <!-- ==================================================
+         JAVASCRIPT
+    =================================================== -->
+
+    <script>
+
+
+        // ==================================================
+        // SEND MESSAGE
+        // ==================================================
+
+        async function sendMessage() {
+
+            const input =
+                document.getElementById("message");
+
+            const text =
+                input.value.trim();
+
+
+            if (!text) {
+                return;
+            }
+
+
+            const chatBox =
+                document.getElementById("chat-box");
+
+
+            // Remove welcome screen
+
+            const welcome =
+                document.querySelector(".welcome");
+
+            if (welcome) {
+                welcome.remove();
+            }
+
+
+            // Add user message
+
+            addMessage(
+                text,
+                "user"
+            );
+
+
+            // Clear input
+
+            input.value = "";
+
+            autoResize(input);
+
+
+            // Show typing indicator
+
+            showTyping();
+
+
+            // Disable button
+
+            setSendState(true);
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        "/chat",
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body: JSON.stringify({
+                                message: text
+                            })
+                        }
+                    );
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        "Server returned an error."
+                    );
+
+                }
+
+
+                const data =
+                    await response.json();
+
+
+                hideTyping();
+
+
+                addMessage(
+                    data.reply,
+                    "bot"
+                );
+
+            }
+
+
+            catch (error) {
+
+                hideTyping();
+
+                addMessage(
+                    "Sorry, something went wrong while communicating with the AI agent.",
+                    "bot",
+                    true
+                );
+
+                console.error(error);
+
+            }
+
+
+            finally {
+
+                setSendState(false);
+
+                input.focus();
+
+            }
+
+        }
+
+
+
+        // ==================================================
+        // ADD MESSAGE
+        // ==================================================
+
+        function addMessage(
+            text,
+            type,
+            error = false
+        ) {
+
+            const chatBox =
+                document.getElementById(
+                    "chat-box"
+                );
+
+
+            const message =
+                document.createElement(
+                    "div"
+                );
+
+
+            message.className =
+                `message ${type}`;
+
+
+            if (error) {
+
+                message.classList.add(
+                    "error"
+                );
+
+            }
+
+
+            const avatar =
+                document.createElement(
+                    "div"
+                );
+
+
+            avatar.className =
+                "message-avatar";
+
+
+            avatar.textContent =
+                type === "user"
+                    ? "👤"
+                    : "🤖";
+
+
+            const content =
+                document.createElement(
+                    "div"
+                );
+
+
+            content.className =
+                "message-content";
+
+
+            const label =
+                document.createElement(
+                    "div"
+                );
+
+
+            label.className =
+                "message-label";
+
+
+            label.textContent =
+                type === "user"
+                    ? "You"
+                    : "Gemini Agent";
+
+
+            const bubble =
+                document.createElement(
+                    "div"
+                );
+
+
+            bubble.className =
+                "message-bubble";
+
+
+            bubble.innerHTML =
+                formatText(text);
+
+
+            content.appendChild(
+                label
+            );
+
+            content.appendChild(
+                bubble
+            );
+
+
+            message.appendChild(
+                avatar
+            );
+
+            message.appendChild(
+                content
+            );
+
+
+            chatBox.appendChild(
+                message
+            );
+
+
+            chatBox.scrollTop =
+                chatBox.scrollHeight;
+
+        }
+
+
+
+        // ==================================================
+        // FORMAT TEXT
+        // ==================================================
+
+        function formatText(text) {
+
+            let formatted =
+                escapeHTML(text);
+
+
+            formatted =
+                formatted.replace(
+                    /\*\*(.*?)\*\*/g,
+                    "<strong>$1</strong>"
+                );
+
+
+            formatted =
+                formatted.replace(
+                    /`(.*?)`/g,
+                    "<code>$1</code>"
+                );
+
+
+            formatted =
+                formatted.replace(
+                    /\n/g,
+                    "<br>"
+                );
+
+
+            return formatted;
+
+        }
+
+
+
+        // ==================================================
+        // ESCAPE HTML
+        // ==================================================
+
+        function escapeHTML(text) {
+
+            const div =
+                document.createElement(
+                    "div"
+                );
+
+            div.textContent =
+                text;
+
+            return div.innerHTML;
+
+        }
+
+
+
+        // ==================================================
+        // TYPING INDICATOR
+        // ==================================================
+
+        function showTyping() {
+
+            document
+                .getElementById("typing")
+                .classList.remove(
+                    "hidden"
+                );
+
+        }
+
+
+        function hideTyping() {
+
+            document
+                .getElementById("typing")
+                .classList.add(
+                    "hidden"
+                );
+
+        }
+
+
+
+        // ==================================================
+        // SEND BUTTON
+        // ==================================================
+
+        function setSendState(
+            disabled
+        ) {
+
+            const button =
+                document.getElementById(
+                    "send-button"
+                );
+
+
+            button.disabled =
+                disabled;
+
+
+            if (disabled) {
+
+                button.innerHTML =
+                    "⏳";
+
+            }
+
+            else {
+
+                button.innerHTML =
+                    "➤";
+
+            }
+
+        }
+
+
+
+        // ==================================================
+        // ENTER KEY
+        // ==================================================
+
+        function handleKey(event) {
+
+            if (
+                event.key === "Enter" &&
+                !event.shiftKey
+            ) {
+
+                event.preventDefault();
+
+                sendMessage();
+
+            }
+
+        }
+
+
+
+        // ==================================================
+        // AUTO RESIZE TEXTAREA
+        // ==================================================
+
+        const textarea =
+            document.getElementById(
+                "message"
+            );
+
+
+        textarea.addEventListener(
+            "input",
+            function () {
+
+                autoResize(this);
+
+            }
+        );
+
+
+        function autoResize(element) {
+
+            element.style.height =
+                "auto";
+
+            element.style.height =
+                element.scrollHeight +
+                "px";
+
+        }
+
+
+
+        // ==================================================
+        // QUICK PROMPT
+        // ==================================================
+
+        function usePrompt(text) {
+
+            const input =
+                document.getElementById(
+                    "message"
+                );
+
+
+            input.value =
+                text;
+
+
+            autoResize(
+                input
+            );
+
+
+            input.focus();
+
+        }
+
+
+
+        // ==================================================
+        // CLEAR CHAT
+        // ==================================================
+
+        function clearChat() {
+
+            const chatBox =
+                document.getElementById(
+                    "chat-box"
+                );
+
+
+            chatBox.innerHTML = `
+
+                <div class="welcome">
+
+                    <div class="welcome-icon">
+                        🤖
+                    </div>
+
+                    <h2>
+                        Conversation cleared
+                    </h2>
+
+                    <p>
+                        Ask me anything to start
+                        a new conversation.
+                    </p>
+
+                    <div class="quick-actions">
+
+                        <button
+                            onclick="usePrompt('Add 125 and 375')"
+                        >
+                            ➕
+                            <span>
+                                Calculate
+                            </span>
+                        </button>
+
+                        <button
+                            onclick="usePrompt('What is the price of iPhone 15?')"
+                        >
+                            🛍️
+                            <span>
+                                Product
+                            </span>
+                        </button>
+
+                        <button
+                            onclick="usePrompt('What is the weather in Jaipur?')"
+                        >
+                            🌤️
+                            <span>
+                                Weather
+                            </span>
+                        </button>
+
+                    </div>
+
+                </div>
+
+            `;
+
+        }
+
+
+    </script>
+
 
 </body>
+
 </html>
