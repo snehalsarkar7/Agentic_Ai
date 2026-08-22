@@ -3,7 +3,14 @@ from google import genai
 from google.genai import types
 import requests
 import os
+import sys
 from dotenv import load_dotenv
+
+# Ensure UTF-8 output encoding on Windows consoles
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8")
 
 
 # ============================================================
@@ -534,13 +541,15 @@ if __name__ == "__main__":
     print("   2. product_info")
     print("   3. get_weather")
     print("============================================================")
-    print("🌐 SERVER")
-    print("   http://0.0.0.0:5000")
+    port = int(os.environ.get("PORT", 5000))
+    debug = os.environ.get("FLASK_DEBUG", "True").lower() in ["true", "1"]
+    
+    print(f"🌐 SERVER running on port {port}")
     print("============================================================")
     print("\n")
 
     app.run(
         host="0.0.0.0",
-        port=5000,
-        debug=True
+        port=port,
+        debug=debug
     )

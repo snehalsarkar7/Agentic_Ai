@@ -37,12 +37,23 @@
 
     <div class="app">
 
+        <!-- Sidebar Overlay for Mobile -->
+
+        <div
+            class="sidebar-overlay"
+            id="sidebar-overlay"
+            onclick="toggleSidebar(false)"
+        ></div>
+
 
         <!-- ==================================================
              SIDEBAR
         =================================================== -->
 
-        <aside class="sidebar">
+        <aside
+            class="sidebar"
+            id="sidebar"
+        >
 
 
             <!-- Brand -->
@@ -64,6 +75,14 @@
                     </span>
 
                 </div>
+
+                <button
+                    class="sidebar-close-btn"
+                    onclick="toggleSidebar(false)"
+                    aria-label="Close sidebar"
+                >
+                    ✕
+                </button>
 
             </div>
 
@@ -216,16 +235,30 @@
 
             <header class="chat-header">
 
-                <div class="header-title">
+                <div class="header-left">
 
-                    <h1>
-                        Gemini Tool Agent
-                    </h1>
+                    <button
+                        class="menu-toggle"
+                        id="menu-toggle"
+                        onclick="toggleSidebar()"
+                        aria-label="Toggle navigation drawer"
+                        aria-expanded="false"
+                    >
+                        <span>☰</span>
+                    </button>
 
-                    <p>
-                        Ask anything and let the agent
-                        choose the right tool.
-                    </p>
+                    <div class="header-title">
+
+                        <h1>
+                            Gemini Tool Agent
+                        </h1>
+
+                        <p>
+                            Ask anything and let the agent
+                            choose the right tool.
+                        </p>
+
+                    </div>
 
                 </div>
 
@@ -839,6 +872,56 @@
 
 
         // ==================================================
+        // SIDEBAR TOGGLE (MOBILE)
+        // ==================================================
+
+        function toggleSidebar(forceState) {
+
+            const sidebar =
+                document.getElementById("sidebar");
+
+            const overlay =
+                document.getElementById("sidebar-overlay");
+
+            const menuToggle =
+                document.getElementById("menu-toggle");
+
+
+            const shouldOpen =
+                forceState !== undefined
+                    ? forceState
+                    : !sidebar.classList.contains("active");
+
+
+            if (shouldOpen) {
+
+                sidebar.classList.add("active");
+
+                overlay.classList.add("active");
+
+                if (menuToggle) {
+                    menuToggle.setAttribute("aria-expanded", "true");
+                }
+
+            }
+
+            else {
+
+                sidebar.classList.remove("active");
+
+                overlay.classList.remove("active");
+
+                if (menuToggle) {
+                    menuToggle.setAttribute("aria-expanded", "false");
+                }
+
+            }
+
+        }
+
+
+
+        // ==================================================
         // QUICK PROMPT
         // ==================================================
 
@@ -861,6 +944,8 @@
 
             input.focus();
 
+            toggleSidebar(false);
+
         }
 
 
@@ -870,6 +955,8 @@
         // ==================================================
 
         function clearChat() {
+
+            toggleSidebar(false);
 
             const chatBox =
                 document.getElementById(
