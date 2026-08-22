@@ -32,24 +32,11 @@ WEATHER_API_KEY = os.getenv("WEATHER_API_KEY")
 # CHECK API KEYS
 # ============================================================
 
-if not GEMINI_API_KEY:
-    raise ValueError(
-        "GEMINI_API_KEY is missing from .env"
-    )
+if not GEMINI_API_KEY or GEMINI_API_KEY == "your_gemini_api_key":
+    print("⚠️ WARNING: GEMINI_API_KEY is missing or set to default placeholder.")
 
-if not WEATHER_API_KEY:
-    raise ValueError(
-        "WEATHER_API_KEY is missing from .env"
-    )
-
-
-# ============================================================
-# GEMINI CLIENT
-# ============================================================
-
-client = genai.Client(
-    api_key=GEMINI_API_KEY
-)
+if not WEATHER_API_KEY or WEATHER_API_KEY == "your_weatherapi_key":
+    print("⚠️ WARNING: WEATHER_API_KEY is missing or set to default placeholder.")
 
 
 # ============================================================
@@ -179,6 +166,12 @@ def get_weather(city: str) -> dict:
     print(f"   City = {city}")
     print("========================================")
 
+    if not WEATHER_API_KEY or WEATHER_API_KEY == "your_weatherapi_key":
+        print("❌ WEATHER API KEY NOT CONFIGURED")
+        return {
+            "error": "Weather API key is not configured. Please set WEATHER_API_KEY in environment variables."
+        }
+
     url = "https://api.weatherapi.com/v1/current.json"
 
     params = {
@@ -296,18 +289,31 @@ tools = [
 
 
 # ============================================================
-# GEMINI CHAT SESSION
+# INITIALIZE CHAT SESSION HELPER
 # ============================================================
 
-chat = client.chats.create(
+client = None
+chat = None
 
-    model="gemini-3.6-flash",
+def get_chat_session():
+    global client, chat
 
-    config=types.GenerateContentConfig(
+    api_key = os.getenv("GEMINI_API_KEY")
 
-        tools=tools,
+    if not api_key or api_key == "your_gemini_api_key":
+        return None
 
-        system_instruction="""
+    if chat is not None:
+        return chat
+
+    try:
+        client = genai.Client(api_key=api_key)
+
+        chat = client.chats.create(
+            model="gemini-3.6-flash",
+            config=types.GenerateContentConfig(
+                tools=tools,
+                system_instruction="""
 
 You are a helpful AI assistant with access to external tools.
 
@@ -425,10 +431,12 @@ IMPORTANT RULES
 10. Be concise and friendly.
 
 """
-
-    )
-
-)
+            )
+        )
+        return chat
+    except Exception as e:
+        print(f"❌ ERROR INITIALIZING GEMINI CLIENT: {e}")
+        return None
 
 
 # ============================================================
@@ -469,6 +477,14 @@ def chat_api():
                 "reply": "Please enter a message."
             })
 
+        # Get or initialize active chat session
+        active_chat = get_chat_session()
+
+        if not active_chat:
+            return jsonify({
+                "reply": "⚠️ GEMINI_API_KEY is not set or invalid. Please configure GEMINI_API_KEY in your environment variables."
+            })
+
         # ----------------------------------------------------
         # PRINT USER MESSAGE
         # ----------------------------------------------------
@@ -484,7 +500,7 @@ def chat_api():
         # SEND TO GEMINI
         # ----------------------------------------------------
 
-        response = chat.send_message(
+        response = active_chat.send_message(
             user_message
         )
 
